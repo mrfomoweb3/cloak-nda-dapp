@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloakNDA: Confidential NDA Management on Zama fhEVM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100%;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Slide Styles */
+        .slide-title {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 1.8em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .slide-content {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .slide-content h2 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide-content h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .slide-content ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .slide-content li {
+            margin-bottom: 12px;
+            list-style-type: disc;
+        }
+
+        .slide-content pre {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.95em;
+            border-left: 4px solid #667eea;
+        }
+
+        .slide-content code {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .feature-box strong {
+            color: #667eea;
+        }
+
+        /* Navigation */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .slide-info {
+            text-align: center;
+            color: #999;
+            font-size: 0.95em;
+        }
+
+        /* Title Slide */
+        .title-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            justify-content: center !important;
+        }
+
+        .title-slide .slide-title {
+            color: white;
+            font-size: 4.5em;
+            margin-bottom: 30px;
+        }
+
+        .title-slide .slide-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 2em;
+        }
+
+        .title-slide .slide-info {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+
+            .slide-title {
+                font-size: 2.5em;
+            }
+
+            .slide-subtitle {
+                font-size: 1.3em;
+            }
+
+            .slide-content {
+                font-size: 1em;
+            }
+
+            .controls {
+                padding: 15px 20px;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1 class="slide-title">CloakNDA</h1>
+            <p class="slide-subtitle">Confidential NDA Management Using Fully Homomorphic Encryption</p>
+            <p class="slide-info">A Production-Grade dApp on Zama fhEVM</p>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>The Problem</h2>
+                <h3>Blockchain Transparency vs. NDA Confidentiality</h3>
+                <ul>
+                    <li><strong>The Paradox:</strong> Blockchain is transparent, but NDAs are confidential</li>
+                    <li><strong>Trust Issues:</strong> Centralized intermediaries can be hacked or compromised</li>
+                    <li><strong>Computational Limitation:</strong> Can't perform operations on encrypted data</li>
+                    <li><strong>Regulatory Compliance:</strong> GDPR, CCPA require data privacy</li>
+                </ul>
+                <div class="feature-box">
+                    <strong>Key Challenge:</strong> How do you store sensitive data on a public blockchain while keeping it private?
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Solution -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>The Solution: Fully Homomorphic Encryption</h2>
+                <h3>Computation Without Decryption</h3>
+                <div class="diagram">Plaintext Data → [FHE Encryption] → Encrypted Data
+
+Encrypted Data → [Computation] → Encrypted Result
+
+Encrypted Result → [Decryption] → Plaintext Result
+
+Key insight: Computation happens WITHOUT decryption!</div>
+                <h3>Why This Matters:</h3>
+                <ul>
+                    <li><strong>Privacy:</strong> Data stays encrypted throughout its lifecycle</li>
+                    <li><strong>Computation:</strong> Smart contracts can work with encrypted data</li>
+                    <li><strong>Verification:</strong> Results are cryptographically verifiable</li>
+                    <li><strong>Compliance:</strong> Meets strict data privacy regulations</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Architecture -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>CloakNDA Architecture</h2>
+                <div class="diagram">┌─────────────────────────────────────────┐
+│     Frontend (React + Vite)             │
+│  Creator | Counterparty | Auditor      │
+└────────────────┬────────────────────────┘
+                 │ REST API
+┌────────────────▼────────────────────────┐
+│     Backend (Node.js)                   │
+│  fhEVM Coprocessor Integration          │
+└────────────────┬────────────────────────┘
+                 │ Web3.js
+┌────────────────▼────────────────────────┐
+│  Smart Contracts (Solidity + fhEVM)     │
+│  NDAManager | AuditTrail                │
+└────────────────┬────────────────────────┘
+                 │ Blockchain RPC
+┌────────────────▼────────────────────────┐
+│     Zama fhEVM Devnet/Testnet           │
+└─────────────────────────────────────────┘</div>
+                <p>Three layers working together seamlessly for encrypted NDA management</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Creator Workflow -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Creator Workflow</h2>
+                <div class="diagram">Step 1: Create NDA
+├─ Title, Terms, Counterparty, Expiration
+
+Step 2: Encrypt & Submit
+├─ Backend encrypts sensitive fields using fhEVM
+
+Step 3: Store on Blockchain
+├─ Smart contract stores encrypted data immutably
+
+Step 4: Share & Track
+├─ Creator gets NDA ID to share
+└─ Tracks signature status in real-time</div>
+                <div class="feature-box">
+                    <strong>Key Benefit:</strong> Your confidential terms are protected by cryptography, not just trust
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Counterparty Workflow -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Counterparty Workflow</h2>
+                <div class="diagram">Step 1: Receive NDA ID
+├─ Creator shares NDA ID
+
+Step 2: Request Decryption
+├─ Backend verifies counterparty address
+├─ Only authorized parties can decrypt
+
+Step 3: View Decrypted Terms
+├─ Backend decrypts using fhEVM
+└─ Counterparty sees plaintext terms
+
+Step 4: Sign & Submit
+├─ Signature encrypted and stored
+└─ Creator notified immediately</div>
+                <div class="feature-box">
+                    <strong>Key Benefit:</strong> Access control is cryptographically enforced - only the right person can see the terms
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Auditor Workflow -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Auditor Workflow</h2>
+                <div class="diagram">Step 1: Request Access
+├─ Creator grants auditor access
+
+Step 2: View Audit Trail
+├─ See all NDA operations
+├─ Creation, signatures, termination
+
+Step 3: Verify Integrity
+├─ Verify encrypted data hasn't been modified
+├─ Confirm all operations are legitimate
+
+Step 4: Generate Report
+├─ Create compliance report
+└─ Blockchain-verified timestamps</div>
+                <div class="feature-box">
+                    <strong>Key Benefit:</strong> Complete transparency for auditors while maintaining privacy for parties
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Data Flow - Create -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Data Flow: Creating an NDA</h2>
+                <div class="diagram">1. Creator Input (Plaintext)
+   ├─ Title, Terms, Counterparty, Expiration
+
+2. Frontend Encryption
+   └─ Sends to Backend API
+
+3. Backend Processing
+   ├─ Calls fhEVM Coprocessor
+   └─ Encrypts: Terms, Counterparty, Expiration
+
+4. Smart Contract Storage
+   ├─ Stores encrypted data
+   └─ Generates NDA ID
+
+5. Audit Trail
+   ├─ Records creation event
+   └─ Blockchain-verified timestamp
+
+6. Frontend Confirmation
+   └─ Displays NDA ID to creator</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Data Flow - Sign -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Data Flow: Signing an NDA</h2>
+                <div class="diagram">1. Counterparty Request
+   └─ Enters NDA ID
+
+2. Backend Verification
+   ├─ Retrieves encrypted NDA
+   └─ Verifies authorization
+
+3. Decryption (fhEVM)
+   ├─ Backend calls fhEVM Coprocessor
+   └─ Returns plaintext to backend
+
+4. Frontend Display
+   └─ Counterparty reviews and signs
+
+5. Signature Encryption
+   ├─ Backend encrypts signature
+   └─ Sends to smart contract
+
+6. Contract Update
+   ├─ Stores encrypted signature
+   └─ Updates status to "Signed"
+
+7. Audit Trail
+   └─ Records signature event</div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Key Features -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Key Features</h2>
+                <div class="feature-box">
+                    <strong>1. End-to-End Encryption</strong><br>
+                    All sensitive data encrypted using fhEVM. No plaintext data stored on-chain.
+                </div>
+                <div class="feature-box">
+                    <strong>2. Role-Based Access Control</strong><br>
+                    Creator, Counterparty, Auditor roles with cryptographically enforced permissions.
+                </div>
+                <div class="feature-box">
+                    <strong>3. Immutable Audit Trail</strong><br>
+                    Every operation recorded on-chain with blockchain-verified timestamps.
+                </div>
+                <div class="feature-box">
+                    <strong>4. Confidential Computations</strong><br>
+                    Smart contracts work with encrypted data without decryption.
+                </div>
+                <div class="feature-box">
+                    <strong>5. Regulatory Compliance</strong><br>
+                    GDPR, CCPA, and SOC 2 compliant.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Security Benefits -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Security Benefits</h2>
+                <h3>Traditional vs. CloakNDA</h3>
+                <div class="feature-box">
+                    <strong>Plaintext Storage → Encrypted Storage</strong><br>
+                    Vulnerable to hacks vs. Cryptographically secure
+                </div>
+                <div class="feature-box">
+                    <strong>Centralized Trust → Decentralized Verification</strong><br>
+                    Single point of failure vs. Blockchain consensus
+                </div>
+                <div class="feature-box">
+                    <strong>Manual Auditing → Automated Verification</strong><br>
+                    Time-consuming vs. Real-time verification
+                </div>
+                <div class="feature-box">
+                    <strong>Policy-Based Access → Cryptographic Access Control</strong><br>
+                    Can be bypassed vs. Mathematically impossible to bypass
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Use Cases -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Use Cases</h2>
+                <div class="feature-box">
+                    <strong>Corporate Partnerships</strong><br>
+                    Confidential business agreements with immutable proof
+                </div>
+                <div class="feature-box">
+                    <strong>Intellectual Property Protection</strong><br>
+                    Patent licensing and trade secret protection
+                </div>
+                <div class="feature-box">
+                    <strong>Legal & Compliance</strong><br>
+                    Regulatory compliance documentation with audit trail
+                </div>
+                <div class="feature-box">
+                    <strong>Venture Capital & Fundraising</strong><br>
+                    Term sheet confidentiality with transparency
+                </div>
+                <div class="feature-box">
+                    <strong>Healthcare & Biotech</strong><br>
+                    Patient data protection and HIPAA compliance
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Technical Stack -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Technical Implementation</h2>
+                <h3>Modern, Production-Grade Stack</h3>
+                <div class="diagram">Frontend: React + Vite + TypeScript + MetaMask
+Backend: Node.js + Express + fhEVM Coprocessor
+Contracts: Solidity + fhEVM Encrypted Types
+Infrastructure: Docker + GitHub Actions + Vercel</div>
+                <ul>
+                    <li>Type-safe development with TypeScript</li>
+                    <li>Real fhEVM integration for encryption/decryption</li>
+                    <li>Scalable and maintainable architecture</li>
+                    <li>Comprehensive testing and CI/CD</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Demo Walkthrough -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Demo Walkthrough</h2>
+                <h3>Live Demonstration Steps:</h3>
+                <ul>
+                    <li><strong>Step 1:</strong> Connect wallet with MetaMask</li>
+                    <li><strong>Step 2:</strong> Create NDA as Creator (encrypted storage)</li>
+                    <li><strong>Step 3:</strong> Switch account to Counterparty</li>
+                    <li><strong>Step 4:</strong> Load and sign NDA (decryption verification)</li>
+                    <li><strong>Step 5:</strong> Switch to Auditor account</li>
+                    <li><strong>Step 6:</strong> View complete audit trail</li>
+                </ul>
+                <div class="feature-box">
+                    <strong>Key Points:</strong> Show encrypted data on-chain, demonstrate access control, verify audit trail
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Competitive Advantages -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Competitive Advantages</h2>
+                <h3>vs. Traditional Solutions</h3>
+                <ul>
+                    <li>No single point of failure</li>
+                    <li>Blockchain-verified timestamps</li>
+                    <li>No intermediary fees</li>
+                </ul>
+                <h3>vs. Other Blockchain Solutions</h3>
+                <ul>
+                    <li>Actual privacy through encryption</li>
+                    <li>Encrypted computations</li>
+                    <li>Regulatory compliance</li>
+                </ul>
+                <h3>vs. Other fhEVM Projects</h3>
+                <ul>
+                    <li>First production NDA dApp</li>
+                    <li>Complete end-to-end solution</li>
+                    <li>Enterprise-ready</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 16: Roadmap -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Roadmap & Future</h2>
+                <div class="feature-box">
+                    <strong>Phase 1 (Current):</strong> MVP with core functionality
+                </div>
+                <div class="feature-box">
+                    <strong>Phase 2 (Q2 2024):</strong> Multi-signature and advanced access control
+                </div>
+                <div class="feature-box">
+                    <strong>Phase 3 (Q3 2024):</strong> Mobile app and mainnet deployment
+                </div>
+                <div class="feature-box">
+                    <strong>Phase 4 (Q4 2024+):</strong> DAO governance and ecosystem
+                </div>
+                <p style="margin-top: 30px; text-align: center; font-weight: bold;">Goal: Make CloakNDA the standard for confidential agreements on blockchain</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: Impact & Vision -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Impact & Vision</h2>
+                <h3>From Centralized to Decentralized</h3>
+                <div class="feature-box">
+                    <strong>Today:</strong> Trust intermediaries, data breaches common, expensive and slow
+                </div>
+                <div class="feature-box">
+                    <strong>Tomorrow:</strong> Trust mathematics, cryptographic security, fast and affordable
+                </div>
+                <h3>CloakNDA's Role:</h3>
+                <ul>
+                    <li>Pioneer encrypted blockchain applications</li>
+                    <li>Prove fhEVM is production-ready</li>
+                    <li>Enable confidential business on blockchain</li>
+                    <li>Build the future of digital trust</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 18: Call to Action -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 style="text-align: center; margin-bottom: 50px;">Join the Future of Confidential Computing</h2>
+                <div class="feature-box" style="text-align: center; font-size: 1.3em;">
+                    <strong>Try CloakNDA:</strong> https://cloaknda.dev
+                </div>
+                <div class="feature-box" style="text-align: center; font-size: 1.3em;">
+                    <strong>Explore the Code:</strong> https://github.com/cloaknda
+                </div>
+                <div class="feature-box" style="text-align: center; font-size: 1.3em;">
+                    <strong>Join the Community:</strong> Discord & Twitter
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Thank You -->
+        <div class="slide title-slide">
+            <h1 class="slide-title">Thank You</h1>
+            <p class="slide-subtitle">Questions?</p>
+            <p class="slide-info">Contact: support@cloaknda.dev</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button id="prevBtn" onclick="previousSlide()">← Previous</button>
+            <div class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">19</span>
+            </div>
+            <button id="nextBtn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
