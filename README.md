@@ -13,6 +13,14 @@ CloakNDA is a proof-of-concept decentralized application that showcases how sens
 - **🌐 Web3 Integration**: Seamless MetaMask wallet connection and transaction signing
 - **⚡ Real-time Updates**: Live status updates and notifications for all parties
 
+### 🎮 Experience CloakNDA Now
+
+**No setup required!** Try our interactive demo to see all features in action:
+
+**[🚀 Launch Interactive Demo](demo/index.html)** | **[📖 Demo Guide](demo/USER_GUIDE.md)** | **[⚙️ Demo Setup](demo/README.md)**
+
+The demo showcases the complete NDA lifecycle across all three user roles with simulated encryption/decryption processes.
+
 ## 🏗️ System Architecture
 
 ```
@@ -92,6 +100,11 @@ cloakNDA/
 │       └── types.ts                # Backend type definitions
 │
 ├── 🧪 test/                        # Test Suites
+├── 🎮 demo/                        # Interactive Demo (No Setup Required)
+│   ├── index.html                  # Main demo interface
+│   ├── demo.js                     # Interactive functionality
+│   ├── README.md                   # Demo quick start guide
+│   └── USER_GUIDE.md               # Complete demo walkthrough
 ├── 📚 docs/                        # Documentation
 │   ├── ARCHITECTURE.md             # Detailed architecture guide
 │   ├── API.md                      # Backend API documentation
@@ -104,11 +117,48 @@ cloakNDA/
 └── 🔐 deployment.example.json      # Deployment configuration
 ```
 
-## 🚀 Quick Start Guide
+## 🎮 Interactive Demo
+
+**Try the CloakNDA system without any setup!** We've created a fully interactive demo that showcases all features.
+
+### 🚀 Quick Demo Access
+
+```bash
+# No installation required - just open in browser
+open demo/index.html
+
+# Or serve locally
+cd demo && python -m http.server 8000
+# Visit: http://localhost:8000
+```
+
+### 📖 Demo Documentation
+
+- **[Demo User Guide](demo/USER_GUIDE.md)** - Complete walkthrough of all profiles and features
+- **[Demo README](demo/README.md)** - Quick start and technical details
+- **[Live Demo](demo/index.html)** - Interactive browser-based demonstration
+
+### 🎯 Demo Features
+
+- **👨‍💼 Creator Interface** - Create NDAs with encryption simulation
+- **🤝 Counterparty Interface** - Review and sign NDAs with decryption demo  
+- **🔍 Auditor Interface** - View audit trails and system statistics
+- **🔐 Encryption Visualization** - Step-by-step fhEVM process demonstration
+- **📱 Responsive Design** - Works on all devices, no dependencies
+
+### 💡 Perfect for:
+- Client presentations and investor demos
+- Technical proof-of-concept showcases  
+- Educational workshops and training
+- Understanding system workflows before development
+
+---
+
+## 🚀 Full Development Setup
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin full development, ensure you have the following installed:
 
 - **Node.js 18+** - JavaScript runtime
 - **pnpm** - Fast, disk space efficient package manager
@@ -165,6 +215,8 @@ Open your browser and navigate to `http://localhost:3000`
 
 ## 🎯 How It Works
 
+> **💡 See it in action**: Try our [Interactive Demo](demo/index.html) to experience these workflows firsthand!
+
 ### 1. **NDA Creation Flow**
 ```
 Creator → Frontend Form → Backend Encryption → Smart Contract → Blockchain
@@ -173,6 +225,8 @@ Creator → Frontend Form → Backend Encryption → Smart Contract → Blockcha
 - Backend encrypts sensitive data using fhEVM
 - Smart contract stores encrypted NDA on-chain
 - Immutable audit trail is created
+
+**🎮 [Try Creator Demo](demo/index.html)** - Experience the complete creation process with encryption visualization
 
 ### 2. **Signature Request Flow**
 ```
@@ -190,6 +244,8 @@ Counterparty → Review Encrypted NDA → Sign → Update Blockchain State
 - Digital signature is recorded on-chain
 - All parties receive status updates
 
+**🎮 [Try Counterparty Demo](demo/index.html)** - See the decryption and signing process in action
+
 ### 4. **Audit Verification Flow**
 ```
 Auditor → Request Access → Verify Permissions → View Audit Trail
@@ -197,6 +253,11 @@ Auditor → Request Access → Verify Permissions → View Audit Trail
 - Auditor requests access to specific NDA
 - System verifies encrypted permissions
 - Complete audit trail is displayed
+
+**🎮 [Try Auditor Demo](demo/index.html)** - Explore the complete audit trail interface
+
+### 📖 Detailed Workflow Guide
+For step-by-step instructions on using each interface, see our [Complete Demo User Guide](demo/USER_GUIDE.md)
 
 ## 🔐 Security Features
 
@@ -279,7 +340,19 @@ pnpm build                    # Build backend
 pnpm start                    # Start production backend
 ```
 
-## 📚 API Documentation
+## 📚 Documentation & Resources
+
+### 🎮 Interactive Demo
+- **[Live Demo](demo/index.html)** - Try CloakNDA in your browser (no setup required)
+- **[Demo User Guide](demo/USER_GUIDE.md)** - Complete walkthrough of all features and profiles
+- **[Demo README](demo/README.md)** - Technical details and customization guide
+
+### 📖 Technical Documentation
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - Comprehensive system architecture and data flows
+- **[API Documentation](docs/API.md)** - Complete backend API reference
+- **[Presentation Guide](docs/PRESENTATION_GUIDE.md)** - Tips for effective demonstrations
+
+### 🔧 API Reference
 
 The backend provides RESTful APIs for frontend integration:
 
@@ -290,10 +363,6 @@ The backend provides RESTful APIs for frontend integration:
 - `POST /api/nda/:id/sign` - Sign NDA as counterparty
 
 For detailed API documentation, see [docs/API.md](docs/API.md)
-
-## 🏛️ Architecture Details
-
-For comprehensive architecture documentation including data flows, security models, and component interactions, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## 🎨 Tech Stack
 
