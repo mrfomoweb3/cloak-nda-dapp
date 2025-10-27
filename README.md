@@ -17,7 +17,7 @@ CloakNDA is a proof-of-concept decentralized application that showcases how sens
 
 **No setup required!** Try our interactive demo to see all features in action:
 
-**[🚀 Launch Interactive Demo](demo/index.html)** | **[📖 Demo Guide](demo/USER_GUIDE.md)** | **[⚙️ Demo Setup](demo/README.md)**
+**[🚀 Launch Interactive Demo](https://cloak-nda-dapp.vercel.app/)** | **[📖 Demo Guide](demo/USER_GUIDE.md)** | **[⚙️ Demo Setup](demo/README.md)**
 
 The demo showcases the complete NDA lifecycle across all three user roles with simulated encryption/decryption processes.
 
@@ -404,11 +404,6 @@ This is a proof-of-concept application demonstrating fhEVM capabilities. Contrib
 
 MIT License - see [LICENSE](LICENSE) file for details
 
-## 🙏 Acknowledgments
-
-- **Zama** - For providing the fhEVM technology that makes this possible
-- **Ethereum Foundation** - For the underlying blockchain infrastructure
-- **Next.js Team** - For the excellent React framework
 
 ---
 
